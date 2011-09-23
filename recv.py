@@ -8,7 +8,7 @@ import numpy as np
 
 
 
-def measure(secs=10, rate=2500):
+def measure(secs=10, rate=2000):
     spls   = secs * rate
     size   = 16   # MB
     stride = 0.5  # MB
@@ -29,6 +29,7 @@ def measure(secs=10, rate=2500):
     time_passed = time() - t0
     i = 0
     t_mean = 0.
+    last_offset = 0
     while time_passed < secs:
         i = (i + 1) % (size // stride)
         rng = slice( i*stride*MB , (i+1)*stride*MB )
@@ -39,12 +40,45 @@ def measure(secs=10, rate=2500):
         
         offset = time_passed // delta_t 
 
-        #print "next_time=%d offset=%d" % (next_time, offset)
-        result[offset] = t_mean
+        result[last_offset:offset] = t_mean
+        last_offset = offset
         time_passed = time() - t0
+
+    result[last_offset:] = t_diff
 
     bw = stride*MB / result
 
     return bw
 
+def filter(signal, freq=200, rate=2000):
+    length = rate // (freq * 2)
 
+    N = signal.size
+    #N_ = int(N // length
+    filtered = np.zeros(N // length)
+        
+    for n in xrange(N // length):
+        first = n*length
+        last = first + length
+        filtered[n] = np.median(signal[first:last])
+
+    dc_free = filtered - filtered.mean()
+ 
+    return dc_free
+
+def run(secs=10, bps=0.5):
+    t0 = time()
+
+    N = 10
+    bins = np.zeros( (secs*bps, N) ) 
+    
+    t = 0
+    while time() < t0 + secs:
+        S = measure(1/bps)
+        S_ = np.fft.fft(S)
+            
+        bins[t,:]  = np.abs(S_[980:990])
+        t += 1
+
+    return bins
+        

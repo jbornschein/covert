@@ -6,8 +6,8 @@ from time import sleep, time
 import numpy as np
 
 # 
-freq = 10    # in Hz
-size = 32    # in MB
+freq = 200    # in Hz
+size = 32     # in MB
 
 # Allocate big memory
 buf1 = np.empty( (size*1024*104), dtype= np.uint8)
@@ -15,6 +15,10 @@ buf2 = np.empty( (size*1024*104), dtype= np.uint8)
 
 
 def send_byte(byte):
+    """
+        takes (1. / freq) * 8 seconds
+    """
+    
     bit_time = 1. / freq 
 
     t0 = time()
@@ -30,10 +34,11 @@ def send_byte(byte):
 byte = 42
 sleep(2)
 while True:
-    print "Sending %d" % byte
     send_byte(2+8+32+128)
-    send_byte(42)
-    send_byte(2+8+32+128)
+    send_byte(0)
+
+    #send_byte(42)
+    #send_byte(2+8+32+128)
     #send_byte(byte)
     #send_byte(2+8+32+128)
     #send_byte(0)
