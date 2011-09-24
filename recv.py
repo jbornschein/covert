@@ -50,8 +50,8 @@ def measure(secs=10, rate=2000):
 
     return bw
 
-def filter(signal, freq=200, rate=2000):
-    length = rate // (freq * 2)
+def filter_dc(signal, freq=200, rate=2000):
+    length = int(rate // (freq * 2))
 
     N = signal.size
     #N_ = int(N // length
@@ -60,11 +60,32 @@ def filter(signal, freq=200, rate=2000):
     for n in xrange(N // length):
         first = n*length
         last = first + length
+
+        first_dc = first
+        last_dc = first + 25*length
+
+        filtered[n] = np.median(signal[first:last]) - np.mean(signal[first_dc:last_dc])
+
+    return filtered
+
+
+def filter(signal, freq=200, rate=2000):
+    length = int(rate // (freq * 2))
+
+    N = signal.size
+    #N_ = int(N // length
+    filtered = np.zeros(N // length)
+        
+    for n in xrange(N // length):
+        first = n*length
+        last = first + length
+
         filtered[n] = np.median(signal[first:last])
 
-    dc_free = filtered - filtered.mean()
- 
-    return dc_free
+    return filtered
+
+
+
 
 def run(secs=10, bps=0.5):
     t0 = time()
