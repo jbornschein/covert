@@ -34,14 +34,25 @@ def send_bit(bit):
             buf1[:] = buf2[:]
         cur_time = time() - t0
 
+def send_byte(byte):
+    byte = int(byte)
+    for i in xrange(7, -1, -1):
+        send_bit( byte & (2 << i) )
+
+def send_buf(buf):
+    for i in xrange(len(buf)):
+        send_byte(buf[i])
+
+def send_str(buf):
+    for i in xrange(len(buf)):
+        send_byte(ord(buf[i]))
+
 byte = 42
 while True:
-    send_bit(0);
-    send_bit(1);
-    send_bit(1);
-    send_bit(1);
-    send_bit(0);
-    send_bit(1);
+    print "Seing message"
+    send_byte(0xaa)
+    send_str("Fiat Lux!")
+    sleep(0.2)
     #send_byte(42)
     #send_byte(2+8+32+128)
     #send_byte(byte)

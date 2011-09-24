@@ -95,8 +95,41 @@ def decode(S, freq=200, rate=2000):
     if pos_edge[0] < neg_edge[0]:
         pos_edge = pos_edge[1:]
 
+    pl = len(pos_edge)
+    nl = len(neg_edge)
+    cl = min(pl, nl)
+
+    pos_edge = pos_edge[:cl]
+    neg_edge = neg_edge[:cl]
+
     length = pos_edge - neg_edge
     return length < 5 
+
+
+def extract_packet(bitstrom):
+    def extract_byte(idx):
+        pos = arange(7, -1, -1)
+        return (bitstrom[idx:idx+8] * 2**pos).sum()
+    
+    assert extract_byte(0) == 0xaa
+
+    s = ""
+    for c in xrange(10):
+        first = c * 8 
+        last = first + 8
+        s += chr( extract_byte(first) ) 
+
+    return s
+
+def packet(bitstrom):
+    sync_pattern = [1,0,1,0,1,0,1,0]
+    sync_len = len(sync_pattern)
+
+    N = len(bitstrom)
+    for n in xrange(N-sync_len-10*8):
+        if (bitstrom[n:n+sync_len] == sync_pattern).all():
+            s = extract_packet(bitstrom[n:])
+            print "[%d] %s" % (n, s)
 
 
 
