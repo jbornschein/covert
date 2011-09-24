@@ -4,6 +4,7 @@ from __future__ import division
 
 from time import sleep, time
 import matplotlib
+import pylab
 import numpy as np
 
 
@@ -89,8 +90,9 @@ def decode(S, freq=200, rate=2000):
     S_ = filter_dc(S, freq, rate)
     M = S_ > 0
 
-    pos_edge = np.where(  (M[1:] == 0) * (M[0:-1] == 1)  )[0]
-    neg_edge = np.where(  (M[1:] == 1) * (M[0:-1] == 0)  )[0]
+    pos_edge = np.where(  (M[0:-1] == 1) * (M[1:] == 0))[0]
+    neg_edge = np.where(  (M[0:-1] == 0) * (M[1:] == 1))[0]
+    #neg_edge = np.where(  (M[1:] == 1) * (M[0:-1] == 0)  )[0]
     
     if pos_edge[0] < neg_edge[0]:
         pos_edge = pos_edge[1:]
@@ -149,3 +151,9 @@ def run(secs=10, bps=0.5):
 
     return bins
         
+def show_sig(S, rowsize=120):
+    rows = int(S.size // rowsize)
+    N = rows * rowsize
+
+    S = S[0:N].reshape( (rows, rowsize) )
+    pylab.imshow(S, interpolation="nearest")
