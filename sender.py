@@ -49,7 +49,7 @@ def send_str(buf):
 
 byte = 42
 while True:
-    print "Seing message"
+    print "Sending message"
     send_byte(0xaa)
     send_str("Fiat Lux!")
     sleep(0.2)
