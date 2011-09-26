@@ -8,8 +8,6 @@ import pylab
 import numpy as np
 from math import pi
 
-from segmentaxis import segment_axis
-
 class Covert:
     def __init__(self, bit_rate=100., f0=600., f1=900., spl_rate=2000):
         MB = 1024*1024
