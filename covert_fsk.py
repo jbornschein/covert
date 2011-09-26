@@ -11,14 +11,14 @@ from math import pi
 from segmentaxis import segment_axis
 
 class Covert:
-    def __init__(self, bit_rate=100., f0=700., f1=1200., spl_rate=3000):
+    def __init__(self, bit_rate=100., f0=600., f1=900., spl_rate=2000):
         MB = 1024*1024
         self.bit_rate = bit_rate
         self.sym_freqs = (f0, f1)
         self.spl_rate = spl_rate
         self.bufstride = 0.20*MB
         self.bufsize = 16*MB
-        self.sync_pattern = np.asarray( 8*[0,1] ) #+[0,1,1,1,0,0] ) 
+        self.sync_pattern = np.asarray( 3*[0,1]+[0,1,1,0]+3*[0,1] ) 
         self.test_pkt = np.asarray([0,0,0,1,1,1,0,0])
 
         # Allocate BW-measure buffer
@@ -163,7 +163,7 @@ class Covert:
 
         C = np.correlate(B_, sp_, "same")
 
-        cand = np.where(C > 0.9*sp_len)[0]
+        cand = np.where(C > 0.8*sp_len)[0]
 
         max_pkt_len = 8
         max_pkt_len_ = max_pkt_len * bit_len
