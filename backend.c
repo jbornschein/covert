@@ -25,7 +25,9 @@ unsigned long get_usec() {
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
-    return tv.tv_usec;
+
+    unsigned long usecs = (tv.tv_sec%100)*1000000 + tv.tv_usec;
+    return usecs;
 }
 
 
@@ -42,58 +44,52 @@ void copy_buf(int nbytes)
     }       
 }
 
+const unsigned long M = 1000000;
 
-void measure(double usec, double rate, double *bw)
+void measure_c(unsigned long usec, unsigned long rate, double *bw)
 {
     unsigned long buf_size = 256*1024;
 
-    double M = 1000000;
-    double G = 1000000000;
-    double delta_t = usec*M / rate;
+    double delta_t = 1. / rate;
 
-    double cur_usec, last_usec, measured_usec;
+    unsigned long start_usec, cur_usec, last_usec, measured_usec;
     unsigned long offset, last_offset = 0;
     
-    struct timespec start_time;
-    struct timespec cur_time;
 
-    clock_gettime(DEFAULT_CLOCK, &start_time);
-    clock_gettime(DEFAULT_CLOCK, &cur_time);
-
-    cur_usec = ((cur_time.tv_nsec - start_time.tv_nsec) % G) / 1000.;
-    last_usec = cur_usec;
+    start_usec = get_usec();
+    cur_usec = get_usec() - start_usec;
     while(cur_usec < usec) {
-        
         // Copy and measure
-        copy_buf(buf_size)
-        cur_usec = ((cur_time.tv_nsec - start_time.tv_nsec) % G) / 1000.;
+        last_usec = cur_usec;
+        copy_buf(buf_size);
+        cur_usec = get_usec() - start_usec;
         measured_usec = cur_usec - last_usec;
 
         // Store to bw array
-        offset = (cur_usec * 1000) / (rate / 1000)
-        for (long i=last_offset; i<offset; i++)
+        offset = ((double)cur_usec/(double)M) / delta_t;
+        int i;
+        for (i=last_offset; i<offset; i++)
             bw[i] =  (double)buf_size / (double)M / (double)measured_usec;
-
-        clock_gettime(DEFAULT_CLOCK, &cur_time);
-        last_usec = cur_usec;
+        last_offset = offset;
     }
 }
 
 
-
+/*
 int main()
 {
     double usec = 1000000.;
     double rate = 2000.;
 
-    size_t bw_size = 1000000*usec * rate
+    size_t bw_size = usec / M * rate;
     double bw[bw_size];
 
     measure(usec, rate, bw);
 
     int i;
-    for (i =0: i<bw_size; i++) {
+    for (i =0; i<bw_size; i++) {
         printf("%f\n", bw[i]);
     }
 }
 
+*/
