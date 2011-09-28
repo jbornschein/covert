@@ -4,5 +4,5 @@ from Cython.Distutils import build_ext
 
 setup(
     cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("pyback", ["pyback.pyx"])]
+    ext_modules = [Extension("backend.pyback", ["backend/pyback.pyx"])]
 )
