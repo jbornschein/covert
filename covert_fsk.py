@@ -6,6 +6,7 @@ from time import sleep, time
 import matplotlib
 import pylab
 import numpy as np
+import scipy.signal as signal
 from math import pi
 
 class Covert:
@@ -193,3 +194,11 @@ def show_sig(S, rowsize=120):
 
     S = S[0:N].reshape( (rows, rowsize) )
     pylab.imshow(S, interpolation="nearest")
+
+def show_freqs(S, rate = 1000000):
+    S_fft = np.fft.fft(S)
+    n = len(S_fft)
+    power = np.abs(S_fft[1:n/2])**2
+    freqs = np.fft.fftfreq(n, 10./rate)[1:n/2]
+    pylab.plot(freqs, power)
+

@@ -1,7 +1,7 @@
 import numpy as np
 cimport numpy as np
 
-cdef extern from "backend.c":
+cdef extern from "backend_unix.c":
     void  measure_c(unsigned long usec, unsigned long rate, unsigned long blk_size, double *bw)
 
 

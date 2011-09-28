@@ -6,21 +6,21 @@ from time import sleep, time
 import matplotlib
 import pylab
 import numpy as np
+import pyback
 
 from covert_fsk import Covert, show_sig
 
 
-cc = Covert()
+cc = Covert(bit_rate=100., f0=600., f1=900., spl_rate=50000)
 
 while True:
-
-    S = cc.measure(3)
+    S = pyback.measure(1 * 1000 * 1000, 50000)
     B = cc.demod(S)
     pkts = cc.decode(B)
 
     pylab.figure(1); 
-    pylab.subplot(2,1,1); show_sig(S, 5*20)
-    pylab.subplot(2,1,2); show_sig(B, 5*20)
+    pylab.subplot(2,1,1); show_sig(S, 5*20*4)
+    pylab.subplot(2,1,2); show_sig(B, 5*20*4)
     pylab.draw()
     
     print 78*"-"
