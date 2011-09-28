@@ -46,10 +46,8 @@ void copy_buf(int nbytes)
 
 const unsigned long M = 1000000;
 
-void measure_c(unsigned long usec, unsigned long rate, double *bw)
+void measure_c(unsigned long usec, unsigned long rate, unsigned long blk_size, double *bw)
 {
-    unsigned long buf_size = 256*1024;
-
     double delta_t = 1. / rate;
 
     unsigned long start_usec, cur_usec, last_usec, measured_usec;
@@ -59,9 +57,10 @@ void measure_c(unsigned long usec, unsigned long rate, double *bw)
     start_usec = get_usec();
     cur_usec = get_usec() - start_usec;
     while(cur_usec < usec) {
+
         // Copy and measure
         last_usec = cur_usec;
-        copy_buf(buf_size);
+        copy_buf(blk_size);
         cur_usec = get_usec() - start_usec;
         measured_usec = cur_usec - last_usec;
 
@@ -69,8 +68,10 @@ void measure_c(unsigned long usec, unsigned long rate, double *bw)
         offset = ((double)cur_usec/(double)M) / delta_t;
         int i;
         for (i=last_offset; i<offset; i++)
-            bw[i] =  (double)buf_size / (double)M / (double)measured_usec;
+            bw[i] =  ((double)blk_size) / ((double)measured_usec);
         last_offset = offset;
+
+        //printf("%li @ %d: %li, %f\n", cur_usec, offset, measured_usec, bw[i-1]);
     }
 }
 
