@@ -115,6 +115,35 @@ class Covert:
         # Return actual memory bandwidth
         bw = bufstride / copy_time
         return bw
+
+
+    def bandpass(self, S, low = 500, high = 1000):
+	#http://www.scipy.org/Cookbook/FIRFilter
+	#http://mpastell.com/2010/01/18/fir-with-scipy/
+        nyq_rate = self.spl_rate / 2.0
+        width = 50.0/nyq_rate
+        ripple_db = 60.0
+        N, beta = signal.kaiserord(ripple_db, width)
+        tapsL = signal.firwin(N, low/nyq_rate, window=('kaiser', beta))
+        tapsH = -signal.firwin(N, high/nyq_rate, window=('kaiser', beta))
+	tapsH[N/2] = tapsH[N/2] + 1
+        tapsB = -(tapsL+tapsH)
+        tapsB[N/2] = tapsB[N/2] + 1
+        return signal.lfilter(tapsB, 1.0, S)
+
+    def bandreject(self, S, low = 700, high = 800):
+	#http://www.scipy.org/Cookbook/FIRFilter
+	#http://mpastell.com/2010/01/18/fir-with-scipy/
+        nyq_rate = self.spl_rate / 2.0
+        width = 50.0/nyq_rate
+        ripple_db = 60.0
+        N, beta = signal.kaiserord(ripple_db, width)
+        tapsL = signal.firwin(N, low/nyq_rate, window=('kaiser', beta))
+        tapsH = signal.firwin(N, high/nyq_rate, window=('kaiser', beta))
+        tapsB = -(tapsL+tapsH)
+        tapsB[N/2] = tapsB[N/2] + 1
+        return signal.lfilter(tapsB, 1.0, S)
+
     
     def demod(self, S):
         """

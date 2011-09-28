@@ -15,7 +15,8 @@ cc = Covert(bit_rate=100., f0=600., f1=900., spl_rate=50000)
 
 while True:
     S = pyback.measure(1 * 1000 * 1000, 50000)
-    B = cc.demod(S)
+    S_ = cc.bandpass(S)
+    B = cc.demod(S_)
     pkts = cc.decode(B)
 
     pylab.figure(1); 
