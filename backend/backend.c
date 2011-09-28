@@ -13,7 +13,7 @@ typedef long long int v2df __attribute__ ((vector_size (16)));
 
 
 /**************************************************************
- * FUCK SHIT MAC OS -- clock_gettime is POSIX you assholes!
+ * Dear MAC OS, clock_gettime is POSIX.
  */
 
 //struct timespec {
@@ -33,14 +33,21 @@ unsigned long get_usec() {
 
 /**************************************************************/
 
+#define buf_size (16*1024*1024/16)
+v2df buf1[buf_size] __attribute__ ((aligned (16)));
+v2df buf2[buf_size] __attribute__ ((aligned (16)));
+
+
 void copy_buf(int nbytes)
 {
-    register v2df reg;
-    v2df buf[128];
 
+    register v2df reg;
+    static int index = 0;
     int i;
     for (i = 0; i < (nbytes / 16); i++) {
-        __builtin_ia32_movntdq(&buf[i % 128], reg);
+        index = (index + 1) % buf_size;
+        //       __builtin_ia32_movntdq(reg, &buf1[index]);
+        __builtin_ia32_movntdq(&buf2[index], reg);
     }       
 }
 
@@ -76,16 +83,17 @@ void measure_c(unsigned long usec, unsigned long rate, unsigned long blk_size, d
 }
 
 
-/*
+#ifdef MAIN
 int main()
 {
-    double usec = 1000000.;
-    double rate = 2000.;
+    unsigned long usec = 1000000;
+    unsigned long rate = 40000;
+    unsigned long blk_size = 64*1024;
 
     size_t bw_size = usec / M * rate;
     double bw[bw_size];
 
-    measure(usec, rate, bw);
+    measure_c(usec, rate, blk_size, bw);
 
     int i;
     for (i =0; i<bw_size; i++) {
@@ -93,4 +101,4 @@ int main()
     }
 }
 
-*/
+#endif
