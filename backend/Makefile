@@ -1,13 +1,10 @@
-CFLAGS=-DMAIN=1
+CFLAGS=-O3 -DMAIN=1 #-std=gnu99
 
-all: backend backend_O2
+all: backend 
 
 backend: backend.c
 	gcc -g $(CFLAGS) backend.c -o backend
-
-backend_O2: backend.c
-	gcc -O2 $(CFLAGS) backend.c -o backend_O2
-
+	gcc -g $(CFLAGS) -S backend.c
 
 clean:
 	rm -f backend backend_O2 pyback.c pyback.so
