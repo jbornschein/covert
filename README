@@ -6,21 +6,15 @@
 
 == Covert channel expoiter ==
 
-
-
-
 In general, the code in this repository tries to use available 
 memory bandwith in you computer to communicate information between
 processes.
 
-
 The sender modulates the shared resource "memory-bandwith" by 
 periodicall performing memcpy like operations.
 
-The sender continously monitors the avalable memory bandwidth by 
-constantly performing memcpy-like operations and measuring the
-time it took.
+The receiver continuosly monitors the avalable memory bandwidth by 
+performing memcpy-like operations and measuring the time it took.
 
-
-
+In this example code we use frequency-shift keying (FSK) to encode bits.
 
